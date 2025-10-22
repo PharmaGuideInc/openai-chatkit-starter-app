@@ -24,9 +24,11 @@ export default function App() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-end bg-slate-100 dark:bg-slate-950">
-      <div className="mx-auto w-full max-w-5xl px-4 py-3 flex items-center justify-end">
-        <AuthButtons />
-      </div>
+      {isAuthenticated && (
+        <div className="mx-auto w-full max-w-5xl px-4 py-3 flex items-center justify-end">
+          <AuthButtons />
+        </div>
+      )}
       <div className="mx-auto w-full max-w-5xl">
         {isLoading ? (
           <div className="flex items-center justify-center h-[60vh] text-slate-500 dark:text-slate-400">

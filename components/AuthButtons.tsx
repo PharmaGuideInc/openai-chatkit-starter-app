@@ -12,15 +12,10 @@ export function AuthButtons() {
     );
   }
 
+  // Do not show a login button here; the main page already provides
+  // a sign-in CTA. When unauthenticated, render nothing in the header.
   if (!isAuthenticated) {
-    return (
-      <button
-        onClick={() => loginWithRedirect()}
-        className="px-3 py-1 rounded-md bg-slate-900 text-white text-sm dark:bg-slate-100 dark:text-slate-900"
-      >
-        Log in
-      </button>
-    );
+    return null;
   }
 
   return (
@@ -39,4 +34,3 @@ export function AuthButtons() {
     </div>
   );
 }
-
