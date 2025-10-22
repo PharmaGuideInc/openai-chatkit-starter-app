@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@openai/chatkit-react": ">=1.1.1 <2.0.0",
+    "@auth0/auth0-react": "^2.2.4",
+    "jose": "^5.9.6",
     "dotenv": "^17.2.3",
     "next": "^15.5.4",
     "openai": "^6.6.0",

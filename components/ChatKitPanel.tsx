@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { ChatKit, useChatKit } from "@openai/chatkit-react";
 import {
   STARTER_PROMPTS,
@@ -49,10 +50,12 @@ export function ChatKitPanel({
   onResponseEnd,
   onThemeRequest,
 }: ChatKitPanelProps) {
+  const { getAccessTokenSilently } = useAuth0();
   const processedFacts = useRef(new Set<string>());
   const [errors, setErrors] = useState<ErrorState>(() => createInitialErrors());
   const [isInitializingSession, setIsInitializingSession] = useState(true);
   const isMountedRef = useRef(true);
+  const hasAttemptedSessionRef = useRef(false);
   const [scriptStatus, setScriptStatus] = useState<
     "pending" | "ready" | "error"
   >(() =>
@@ -178,18 +181,48 @@ export function ChatKitPanel({
       }
 
       if (isMountedRef.current) {
-        if (!currentSecret) {
+        if (!currentSecret && !hasAttemptedSessionRef.current) {
           setIsInitializingSession(true);
+          hasAttemptedSessionRef.current = true;
         }
-        setErrorState({ session: null, integration: null, retryable: false });
+        // Keep any previous error visible until we succeed.
       }
 
       try {
+        let token: string | null = null;
+        try {
+          const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
+          const tokenPromise = getAccessTokenSilently(
+            audience ? { authorizationParams: { audience } } : undefined
+          );
+          token = (await Promise.race([
+            tokenPromise,
+            new Promise<string>((_, reject) =>
+              setTimeout(() => reject(new Error("Token timeout")), 8000)
+            ),
+          ]).catch((e) => {
+            console.error("Failed to obtain access token", e);
+            return null;
+          })) as string | null;
+        } catch (tokenErr) {
+          console.error("Failed to obtain access token", tokenErr);
+          // We'll continue; backend will reject if missing.
+        }
+
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json",
+        };
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 25000);
+
         const response = await fetch(CREATE_SESSION_ENDPOINT, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers,
+          signal: controller.signal,
           body: JSON.stringify({
             workflow: { id: WORKFLOW_ID },
             chatkit_configuration: {
@@ -200,6 +233,7 @@ export function ChatKitPanel({
             },
           }),
         });
+        window.clearTimeout(timeoutId);
 
         const raw = await response.text();
 
@@ -258,7 +292,7 @@ export function ChatKitPanel({
         }
       }
     },
-    [isWorkflowConfigured, setErrorState]
+    [isWorkflowConfigured, setErrorState, getAccessTokenSilently]
   );
 
   const chatkit = useChatKit({
@@ -348,19 +382,11 @@ export function ChatKitPanel({
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
-        className={
-          blockingError || isInitializingSession
-            ? "pointer-events-none opacity-0"
-            : "block h-full w-full"
-        }
+        className={"block h-full w-full"}
       />
       <ErrorOverlay
         error={blockingError}
-        fallbackMessage={
-          blockingError || !isInitializingSession
-            ? null
-            : "Loading assistant session..."
-        }
+        fallbackMessage={null}
         onRetry={blockingError && errors.retryable ? handleResetChat : null}
         retryLabel="Restart chat"
       />

@@ -1,6 +1,7 @@
 import Script from "next/script";
 import type { Metadata } from "next";
 import "./globals.css";
+import Auth0ProviderWithConfig from "./auth/Auth0ProviderWithConfig";
 
 export const metadata: Metadata = {
   title: "AgentKit demo",
@@ -20,7 +21,9 @@ export default function RootLayout({
           strategy="beforeInteractive"
         />
       </head>
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <Auth0ProviderWithConfig>{children}</Auth0ProviderWithConfig>
+      </body>
     </html>
   );
 }

@@ -1,4 +1,5 @@
 import { WORKFLOW_ID } from "@/lib/config";
+import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 
 export const runtime = "edge";
 
@@ -14,8 +15,7 @@ interface CreateSessionRequestBody {
 }
 
 const DEFAULT_CHATKIT_BASE = "https://api.openai.com";
-const SESSION_COOKIE_NAME = "chatkit_session_id";
-const SESSION_COOKIE_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+// Auth now enforced; session cookie no longer used
 
 export async function POST(request: Request): Promise<Response> {
   if (request.method !== "POST") {
@@ -36,10 +36,36 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
+    // Enforce Auth0 authentication via Bearer token
+    const authHeader = request.headers.get("authorization");
+    if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) {
+      return buildJsonResponse(
+        { error: "Missing Authorization header" },
+        401,
+        { "Content-Type": "application/json" },
+        null
+      );
+    }
+
+    const token = authHeader.slice(7).trim();
+    let userIdFromAuth: string;
+    try {
+      ({ userIdFromAuth } = await verifyAuth0Token(token));
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Invalid or expired token";
+      return buildJsonResponse(
+        { error: message },
+        401,
+        { "Content-Type": "application/json" },
+        null
+      );
+    }
+
     const parsedBody = await safeParseJson<CreateSessionRequestBody>(request);
-    const { userId, sessionCookie: resolvedSessionCookie } =
-      await resolveUserId(request);
-    sessionCookie = resolvedSessionCookie;
+    // We use the authenticated subject as the user id
+    const userId = userIdFromAuth;
+    sessionCookie = null;
     const resolvedWorkflowId =
       parsedBody?.workflow?.id ?? parsedBody?.workflowId ?? WORKFLOW_ID;
 
@@ -61,6 +87,8 @@ export async function POST(request: Request): Promise<Response> {
 
     const apiBase = process.env.CHATKIT_API_BASE ?? DEFAULT_CHATKIT_BASE;
     const url = `${apiBase}/v1/chatkit/sessions`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 25000);
     const upstreamResponse = await fetch(url, {
       method: "POST",
       headers: {
@@ -68,6 +96,7 @@ export async function POST(request: Request): Promise<Response> {
         Authorization: `Bearer ${openaiApiKey}`,
         "OpenAI-Beta": "chatkit_beta=v1",
       },
+      signal: controller.signal,
       body: JSON.stringify({
         workflow: { id: resolvedWorkflowId },
         user: userId,
@@ -79,6 +108,7 @@ export async function POST(request: Request): Promise<Response> {
         },
       }),
     });
+    clearTimeout(timer);
 
     if (process.env.NODE_ENV !== "production") {
       console.info("[create-session] upstream response", {
@@ -111,21 +141,43 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
-    const clientSecret = upstreamJson?.client_secret ?? null;
-    const expiresAfter = upstreamJson?.expires_after ?? null;
+    // Normalize client_secret to a plain string for the client
+    let clientSecret: string | null = null;
+    const rawSecret = (upstreamJson as any)?.client_secret;
+    if (typeof rawSecret === "string") {
+      clientSecret = rawSecret;
+    } else if (rawSecret && typeof rawSecret === "object") {
+      clientSecret = (rawSecret as { value?: unknown }).value as string | null;
+    }
+    const expiresAfter =
+      (upstreamJson as any)?.expires_after ??
+      (rawSecret && typeof rawSecret === "object"
+        ? (rawSecret as { expires_after?: unknown }).expires_after
+        : null);
     const responsePayload = {
       client_secret: clientSecret,
       expires_after: expiresAfter,
     };
 
-    return buildJsonResponse(
-      responsePayload,
-      200,
-      { "Content-Type": "application/json" },
-      sessionCookie
-    );
+    return buildJsonResponse(responsePayload, 200, { "Content-Type": "application/json" }, sessionCookie);
   } catch (error) {
     console.error("Create session error", error);
+    const isAbort =
+      (error && typeof error === "object" && "name" in error &&
+        // @ts-expect-error runtime check
+        error.name === "AbortError") ||
+      // Some environments set code instead of name
+      (error && typeof error === "object" && "code" in error &&
+        // @ts-expect-error runtime check
+        error.code === 20);
+    if (isAbort) {
+      return buildJsonResponse(
+        { error: "Upstream request timed out" },
+        504,
+        { "Content-Type": "application/json" },
+        sessionCookie
+      );
+    }
     return buildJsonResponse(
       { error: "Unexpected error" },
       500,
@@ -146,63 +198,38 @@ function methodNotAllowedResponse(): Response {
   });
 }
 
-async function resolveUserId(request: Request): Promise<{
-  userId: string;
-  sessionCookie: string | null;
-}> {
-  const existing = getCookieValue(
-    request.headers.get("cookie"),
-    SESSION_COOKIE_NAME
+// Verifies the Auth0 JWT access token and returns the subject (user id)
+async function verifyAuth0Token(token: string): Promise<{ userIdFromAuth: string }>
+{
+  const domain =
+    process.env.AUTH0_DOMAIN || process.env.NEXT_PUBLIC_AUTH0_DOMAIN || "";
+  const audience =
+    process.env.AUTH0_AUDIENCE || process.env.NEXT_PUBLIC_AUTH0_AUDIENCE || "";
+
+  if (!domain) {
+    throw new Error("Missing AUTH0_DOMAIN or NEXT_PUBLIC_AUTH0_DOMAIN env var");
+  }
+  if (!audience) {
+    throw new Error(
+      "Missing AUTH0_AUDIENCE or NEXT_PUBLIC_AUTH0_AUDIENCE env var"
+    );
+  }
+
+  const issuer = `https://${domain}/`;
+  const JWKS = createRemoteJWKSet(
+    new URL(`https://${domain}/.well-known/jwks.json`)
   );
-  if (existing) {
-    return { userId: existing, sessionCookie: null };
+
+  const { payload } = await jwtVerify(token, JWKS, {
+    issuer,
+    audience,
+  });
+
+  const sub = getSubject(payload);
+  if (!sub) {
+    throw new Error("Invalid token: missing subject");
   }
-
-  const generated =
-    typeof crypto.randomUUID === "function"
-      ? crypto.randomUUID()
-      : Math.random().toString(36).slice(2);
-
-  return {
-    userId: generated,
-    sessionCookie: serializeSessionCookie(generated),
-  };
-}
-
-function getCookieValue(
-  cookieHeader: string | null,
-  name: string
-): string | null {
-  if (!cookieHeader) {
-    return null;
-  }
-
-  const cookies = cookieHeader.split(";");
-  for (const cookie of cookies) {
-    const [rawName, ...rest] = cookie.split("=");
-    if (!rawName || rest.length === 0) {
-      continue;
-    }
-    if (rawName.trim() === name) {
-      return rest.join("=").trim();
-    }
-  }
-  return null;
-}
-
-function serializeSessionCookie(value: string): string {
-  const attributes = [
-    `${SESSION_COOKIE_NAME}=${encodeURIComponent(value)}`,
-    "Path=/",
-    `Max-Age=${SESSION_COOKIE_MAX_AGE}`,
-    "HttpOnly",
-    "SameSite=Lax",
-  ];
-
-  if (process.env.NODE_ENV === "production") {
-    attributes.push("Secure");
-  }
-  return attributes.join("; ");
+  return { userIdFromAuth: sub };
 }
 
 function buildJsonResponse(
@@ -280,4 +307,9 @@ function extractUpstreamError(
     return payload.message;
   }
   return null;
+}
+
+function getSubject(payload: JWTPayload): string | null {
+  const sub = payload.sub;
+  return typeof sub === "string" && sub.length > 0 ? sub : null;
 }
