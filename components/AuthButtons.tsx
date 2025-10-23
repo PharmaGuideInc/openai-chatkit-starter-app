@@ -27,7 +27,7 @@ export function AuthButtons() {
         onClick={() =>
           logout({ logoutParams: { returnTo: window.location.origin } })
         }
-        className="px-3 py-1 rounded-md border text-sm border-slate-300 dark:border-slate-700"
+        className="px-3 py-1 rounded-md border text-sm border-slate-300 dark:border-slate-700 cursor-pointer"
       >
         Log out
       </button>

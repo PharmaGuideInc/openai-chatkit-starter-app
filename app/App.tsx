@@ -52,7 +52,7 @@ export default function App() {
               </p>
               <button
                 onClick={() => loginWithRedirect()}
-                className="px-4 py-2 rounded-md bg-slate-900 text-white text-sm dark:bg-slate-100 dark:text-slate-900"
+                className="px-4 py-2 rounded-md bg-slate-900 text-white text-sm dark:bg-slate-100 dark:text-slate-900 cursor-pointer"
               >
                 Log in
               </button>
