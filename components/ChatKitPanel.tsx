@@ -13,6 +13,7 @@ import {
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
+import { ChatHistorySidebar } from "./ChatHistorySidebar";
 
 export type FactAction = {
   type: "save";
@@ -64,6 +65,26 @@ export function ChatKitPanel({
       : "pending"
   );
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [titleOverrides, setTitleOverrides] = useState<Record<string, string>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = window.localStorage.getItem("chatkit:title_overrides");
+      return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem("chatkit:title_overrides", JSON.stringify(titleOverrides));
+      }
+    } catch {
+      // ignore
+    }
+  }, [titleOverrides]);
 
   const setErrorState = useCallback((updates: Partial<ErrorState>) => {
     setErrors((current) => ({ ...current, ...updates }));
@@ -301,6 +322,17 @@ export function ChatKitPanel({
       colorScheme: theme,
       ...getThemeConfig(theme),
     },
+    header: {
+      enabled: true,
+      title: {
+        enabled: true,
+        text: activeThreadId ? titleOverrides[activeThreadId] ?? undefined : undefined,
+      },
+    },
+    history: {
+      // We'll render our own persistent sidebar next to the chat UI
+      enabled: false,
+    },
     startScreen: {
       greeting: GREETING,
       prompts: STARTER_PROMPTS,
@@ -354,8 +386,12 @@ export function ChatKitPanel({
     onResponseStart: () => {
       setErrorState({ integration: null, retryable: false });
     },
-    onThreadChange: () => {
+    onThreadChange: ({ threadId }: { threadId: string | null }) => {
+      setActiveThreadId(threadId ?? null);
       processedFacts.current.clear();
+    },
+    onThreadLoadEnd: ({ threadId }: { threadId: string }) => {
+      setActiveThreadId(threadId ?? null);
     },
     onError: ({ error }: { error: unknown }) => {
       // Note that Chatkit UI handles errors for your users.
@@ -377,19 +413,76 @@ export function ChatKitPanel({
     });
   }
 
+  const handleNewChat = useCallback(() => {
+    void chatkit.setThreadId(null);
+  }, [chatkit]);
+
+  const handleSelectThread = useCallback(
+    (id: string) => {
+      // Optimistically highlight selection
+      setActiveThreadId(id);
+      void chatkit.setThreadId(id);
+    },
+    [chatkit]
+  );
+
+  const handleDeletedThread = useCallback(
+    (id: string) => {
+      if (activeThreadId === id) {
+        setActiveThreadId(null);
+        void chatkit.setThreadId(null);
+      }
+      // Fetch updated data if needed
+      void chatkit.fetchUpdates();
+    },
+    [activeThreadId, chatkit]
+  );
+
+  const handleRenamedThread = useCallback(
+    (_id: string, _title: string) => {
+      setTitleOverrides((prev) => ({ ...prev, [_id]: _title }));
+      // Update header right away
+      void chatkit.fetchUpdates();
+    },
+    [chatkit]
+  );
+
   return (
-    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
-      <ChatKit
-        key={widgetInstanceKey}
-        control={chatkit.control}
-        className={"block h-full w-full"}
+    <div className="relative flex h-[90vh] w-full overflow-hidden rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
+      <ChatHistorySidebar
+        chatkitRef={chatkit.ref}
+        activeThreadId={activeThreadId}
+        onNewChat={handleNewChat}
+        onSelectThread={handleSelectThread}
+        titleOverrides={titleOverrides}
+        getAccessToken={async () => {
+          try {
+            const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
+            const token = await getAccessTokenSilently(
+              audience ? { authorizationParams: { audience } } : undefined
+            );
+            return token ?? null;
+          } catch (e) {
+            console.error("[ChatKitPanel] getAccessToken failed", e);
+            return null;
+          }
+        }}
+        onDeletedThread={handleDeletedThread}
+        onRenamedThread={handleRenamedThread}
       />
-      <ErrorOverlay
-        error={blockingError}
-        fallbackMessage={null}
-        onRetry={blockingError && errors.retryable ? handleResetChat : null}
-        retryLabel="Restart chat"
-      />
+      <div className="relative flex-1 pb-8">
+        <ChatKit
+          key={widgetInstanceKey}
+          control={chatkit.control}
+          className={"block h-full w-full"}
+        />
+        <ErrorOverlay
+          error={blockingError}
+          fallbackMessage={null}
+          onRetry={blockingError && errors.retryable ? handleResetChat : null}
+          retryLabel="Restart chat"
+        />
+      </div>
     </div>
   );
 }
