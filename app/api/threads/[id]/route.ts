@@ -1,4 +1,4 @@
-import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
 export const runtime = "edge";
 
@@ -11,7 +11,7 @@ function json(payload: unknown, status = 200, headers: Record<string, string> = 
 
 async function getParamId(params: unknown): Promise<string | null> {
   try {
-    const resolved: any = await (params as any);
+    const resolved: { id?: string } = await (params as Promise<{ id?: string }>);
     return typeof resolved?.id === "string" ? resolved.id : null;
   } catch {
     return null;
@@ -20,7 +20,7 @@ async function getParamId(params: unknown): Promise<string | null> {
 
 export async function DELETE(
   request: Request,
-  ctx: { params: Promise<{ id: string }> } | { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
   try {
     const openaiApiKey = process.env.OPENAI_API_KEY;
@@ -33,7 +33,7 @@ export async function DELETE(
     const token = authHeader.slice(7).trim();
     await verifyAuth0Token(token);
 
-    const threadId = await getParamId((ctx as any)?.params);
+    const threadId = await getParamId(params);
     if (!threadId) return json({ error: "Missing thread id" }, 400);
 
     const apiBase = (process.env.CHATKIT_API_BASE || "https://api.openai.com").replace(/\/$/, "");
@@ -62,7 +62,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: Request,
-  ctx: { params: Promise<{ id: string }> } | { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<Response> {
   try {
     const openaiApiKey = process.env.OPENAI_API_KEY;
@@ -75,7 +75,7 @@ export async function PATCH(
     const token = authHeader.slice(7).trim();
     await verifyAuth0Token(token);
 
-    const threadId = await getParamId((ctx as any)?.params);
+    const threadId = await getParamId(params);
     if (!threadId) return json({ error: "Missing thread id" }, 400);
 
     const payload = await request.json().catch(() => null);

@@ -3,7 +3,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
 export function AuthButtons() {
-  const { isAuthenticated, isLoading, user, loginWithRedirect, logout } =
+  const { isAuthenticated, isLoading, user, logout } =
     useAuth0();
 
   if (isLoading) {

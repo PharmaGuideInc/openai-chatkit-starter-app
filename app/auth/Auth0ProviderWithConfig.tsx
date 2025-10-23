@@ -18,7 +18,6 @@ export default function Auth0ProviderWithConfig({ children }: Props) {
   // If configuration is missing, render the app without the provider
   if (!domain || !clientId) {
     if (process.env.NODE_ENV !== "production") {
-      // eslint-disable-next-line no-console
       console.warn(
         "[Auth0] Missing NEXT_PUBLIC_AUTH0_DOMAIN or NEXT_PUBLIC_AUTH0_CLIENT_ID; rendering without Auth0Provider"
       );
@@ -50,4 +49,3 @@ export default function Auth0ProviderWithConfig({ children }: Props) {
     </Auth0Provider>
   );
 }
-

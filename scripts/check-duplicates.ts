@@ -6,6 +6,16 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const BASE_URL = 'https://api.openai.com/v1';
 
+interface OpenAIFile {
+  id: string;
+  filename: string;
+  bytes: number;
+  created_at: number;
+  purpose?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
 async function fetchAPI(endpoint: string) {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'GET',
@@ -27,7 +37,7 @@ async function checkDuplicates() {
   try {
     console.log('Fetching all files to check for duplicates...\n');
     
-    let allFiles: any[] = [];
+    let allFiles: OpenAIFile[] = [];
     let after: string | undefined = undefined;
     
     // Fetch all files using pagination
@@ -46,7 +56,7 @@ async function checkDuplicates() {
     console.log(`Total files fetched: ${allFiles.length}\n`);
     
     // Check for duplicates by filename
-    const filesByName: Record<string, any[]> = {};
+    const filesByName: Record<string, OpenAIFile[]> = {};
     allFiles.forEach(file => {
       const filename = file.filename;
       if (!filesByName[filename]) {
@@ -56,7 +66,7 @@ async function checkDuplicates() {
     });
     
     // Find duplicates
-    const duplicates = Object.entries(filesByName).filter(([_, files]) => files.length > 1);
+    const duplicates = Object.entries(filesByName).filter(([, files]) => files.length > 1);
     
     if (duplicates.length === 0) {
       console.log('✅ No duplicate filenames found!\n');

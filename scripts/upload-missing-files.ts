@@ -12,6 +12,13 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const BASE_URL = 'https://api.openai.com/v1';
 const LOCAL_FOLDER = 'markdown_for_vectorstore';
 
+interface OpenAIFile {
+  id: string;
+  filename: string;
+  bytes: number;
+  [key: string]: unknown;
+}
+
 async function fetchAPI(endpoint: string) {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method: 'GET',
@@ -58,7 +65,7 @@ async function uploadMissingFiles() {
     console.log('Step 1: Fetching currently uploaded files from OpenAI...\n');
     
     // Fetch all currently uploaded files
-    let uploadedFiles: any[] = [];
+    let uploadedFiles: OpenAIFile[] = [];
     let after: string | undefined = undefined;
     
     do {
@@ -148,7 +155,7 @@ async function uploadMissingFiles() {
     // Verify final count
     console.log('\nStep 4: Verifying final count...\n');
     
-    let finalFiles: any[] = [];
+    let finalFiles: OpenAIFile[] = [];
     after = undefined;
     
     do {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { OpenAIChatKit } from "@openai/chatkit";
 
 type ThreadItem = {
@@ -60,7 +60,6 @@ export function ChatHistorySidebar({
 }: ChatHistorySidebarProps) {
   const [threads, setThreads] = useState<ThreadItem[]>(() => readStoredThreads());
   const initializedRef = useRef(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState<string>("");
@@ -85,11 +84,6 @@ export function ChatHistorySidebar({
     setThreads(readStoredThreads());
   }, []);
 
-  useEffect(() => {
-    // Initial fetch of server history
-    void fetchServerThreads();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const onDocClick = () => setMenuOpenFor(null);
@@ -98,10 +92,9 @@ export function ChatHistorySidebar({
   }, []);
 
   // Fetch server-backed ChatKit history and merge into local list
-  const fetchServerThreads = async () => {
+  const fetchServerThreads = useCallback(async () => {
     try {
       if (!getAccessToken) return;
-      setIsLoading(true);
       setError(null);
       const token = await getAccessToken();
       const controller = new AbortController();
@@ -144,10 +137,13 @@ export function ChatHistorySidebar({
     } catch (e) {
       console.error("[Sidebar] Failed to load server threads", e);
       setError(e instanceof Error ? e.message : "Failed to load history");
-    } finally {
-      setIsLoading(false);
     }
-  };
+  }, [getAccessToken]);
+
+  useEffect(() => {
+    // Initial fetch of server history
+    void fetchServerThreads();
+  }, [fetchServerThreads]);
 
   // Attach listeners to track thread changes and usage
   useEffect(() => {
@@ -208,7 +204,7 @@ export function ChatHistorySidebar({
       el.removeEventListener("chatkit.thread.load.end", handleLoaded as EventListener);
       el.removeEventListener("chatkit.response.end", handleResponseEnd as EventListener);
     };
-  }, [chatkitRef]);
+  }, [chatkitRef, fetchServerThreads]);
 
   async function withAuthHeaders() {
     const token = getAccessToken ? await getAccessToken() : null;

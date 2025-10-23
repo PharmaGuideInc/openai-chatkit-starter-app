@@ -7,7 +7,13 @@ const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const BASE_URL = 'https://api.openai.com/v1';
 const VECTOR_STORE_ID = 'vs_68f7cf20da288191bc7b87e142689081';
 
-async function fetchAPI(endpoint: string, method = 'GET', body?: any) {
+interface OpenAIFile {
+  id: string;
+  filename: string;
+  [key: string]: unknown;
+}
+
+async function fetchAPI(endpoint: string, method = 'GET', body?: Record<string, unknown>) {
   const options: RequestInit = {
     method,
     headers: {
@@ -35,7 +41,7 @@ async function attachFilesToVectorStore() {
     console.log('Step 1: Fetching all uploaded files from OpenAI...\n');
     
     // Fetch all files
-    let allFiles: any[] = [];
+    let allFiles: OpenAIFile[] = [];
     let after: string | undefined = undefined;
     
     do {

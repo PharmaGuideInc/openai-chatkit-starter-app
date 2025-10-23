@@ -62,28 +62,30 @@ export async function GET(request: Request): Promise<Response> {
       | undefined;
 
     if (!upstreamResponse.ok) {
-      const message = (upstreamJson as any)?.error || upstreamResponse.statusText;
+      const message = (upstreamJson as Record<string, unknown>)?.error || upstreamResponse.statusText;
       return json({ error: message, details: upstreamJson }, upstreamResponse.status);
     }
 
     const data = upstreamJson?.data ?? [];
-    const threads = data.map((t) => ({
-      id: t.id,
-      title: t.title ?? null,
-      created_at: t.created_at ?? null,
-      status:
-        (t as any)?.status && typeof (t as any).status === "object" && typeof (t as any).status.type === "string"
-          ? (t as any).status.type
-          : "active",
-      user: t.user ?? userIdFromAuth,
-    }));
+    const threads = data.map((t) => {
+      const threadStatus = t.status as { type?: unknown } | undefined;
+      return {
+        id: t.id,
+        title: t.title ?? null,
+        created_at: t.created_at ?? null,
+        status:
+          threadStatus && typeof threadStatus === "object" && typeof threadStatus.type === "string"
+            ? threadStatus.type
+            : "active",
+        user: t.user ?? userIdFromAuth,
+      };
+    });
 
     return json({ threads, has_more: Boolean(upstreamJson?.has_more), last_id: upstreamJson?.last_id ?? null });
   } catch (error) {
     console.error("[threads] GET failed", error);
     const isAbort =
       error && typeof error === "object" && "name" in error &&
-      // @ts-ignore runtime check
       (error.name === "AbortError" || error.name === "TimeoutError");
     if (isAbort) {
       return json({ error: "Upstream request timed out" }, 504);

@@ -143,14 +143,14 @@ export async function POST(request: Request): Promise<Response> {
 
     // Normalize client_secret to a plain string for the client
     let clientSecret: string | null = null;
-    const rawSecret = (upstreamJson as any)?.client_secret;
+    const rawSecret = (upstreamJson as Record<string, unknown>)?.client_secret;
     if (typeof rawSecret === "string") {
       clientSecret = rawSecret;
     } else if (rawSecret && typeof rawSecret === "object") {
       clientSecret = (rawSecret as { value?: unknown }).value as string | null;
     }
     const expiresAfter =
-      (upstreamJson as any)?.expires_after ??
+      (upstreamJson as Record<string, unknown>)?.expires_after ??
       (rawSecret && typeof rawSecret === "object"
         ? (rawSecret as { expires_after?: unknown }).expires_after
         : null);
@@ -164,11 +164,9 @@ export async function POST(request: Request): Promise<Response> {
     console.error("Create session error", error);
     const isAbort =
       (error && typeof error === "object" && "name" in error &&
-        // @ts-expect-error runtime check
         error.name === "AbortError") ||
       // Some environments set code instead of name
       (error && typeof error === "object" && "code" in error &&
-        // @ts-expect-error runtime check
         error.code === 20);
     if (isAbort) {
       return buildJsonResponse(

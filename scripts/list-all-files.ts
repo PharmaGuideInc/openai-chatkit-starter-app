@@ -6,6 +6,17 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const BASE_URL = 'https://api.openai.com/v1';
 
+interface OpenAIFile {
+  id: string;
+  filename: string;
+  bytes: number;
+  created_at: number;
+  purpose?: string;
+  status?: string;
+  status_details?: string;
+  [key: string]: unknown;
+}
+
 async function fetchAPI(endpoint: string, method = 'GET') {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     method,
@@ -28,7 +39,7 @@ async function listAllFiles() {
     console.log('Fetching all files from OpenAI...\n');
     
     // List all files with pagination
-    let allFiles: any[] = [];
+    let allFiles: OpenAIFile[] = [];
     let after: string | undefined = undefined;
     
     do {
@@ -51,7 +62,7 @@ async function listAllFiles() {
     }
     
     // Group files by purpose
-    const filesByPurpose: Record<string, any[]> = {};
+    const filesByPurpose: Record<string, OpenAIFile[]> = {};
     allFiles.forEach(file => {
       const purpose = file.purpose || 'unknown';
       if (!filesByPurpose[purpose]) {
@@ -99,7 +110,9 @@ async function listAllFiles() {
       console.log(`\nFiles with status:`);
       const statusGroups: Record<string, number> = {};
       filesWithStatus.forEach(f => {
-        statusGroups[f.status] = (statusGroups[f.status] || 0) + 1;
+        if (f.status) {
+          statusGroups[f.status] = (statusGroups[f.status] || 0) + 1;
+        }
       });
       for (const [status, count] of Object.entries(statusGroups)) {
         console.log(`  - ${status}: ${count} files`);
