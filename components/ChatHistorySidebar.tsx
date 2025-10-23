@@ -350,28 +350,28 @@ export function ChatHistorySidebar({
                       </div>
                     </div>
                   ) : (
-                    <div className="group flex items-center">
+                    <div className={
+                      "group flex items-center gap-1 rounded-md transition cursor-pointer " +
+                      (isActive
+                        ? "bg-slate-200 text-slate-900 dark:bg-slate-700 dark:text-slate-100"
+                        : "hover:bg-slate-100 text-slate-700 dark:text-slate-200 dark:hover:bg-slate-800")
+                    }>
                       <button
                         type="button"
                         onClick={() => onSelectThread(t.id)}
-                        className={
-                          "flex-1 rounded-md px-3 py-2 text-left text-sm transition " +
-                          (isActive
-                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                            : "hover:bg-slate-100 text-slate-700 dark:text-slate-200 dark:hover:bg-slate-800")
-                        }
+                        className="flex-1 min-w-0 px-3 py-2 text-left text-sm cursor-pointer"
                         title={t.title ? `${t.title} (${t.id})` : "New chat"}
                       >
-                        <span className="truncate">{label}</span>
+                        <span className="block truncate">{label}</span>
                       </button>
-                      <div className="ml-1 shrink-0">
+                      <div className="shrink-0">
                         <button
                           type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             setMenuOpenFor((curr) => (curr === t.id ? null : t.id));
                           }}
-                          className="inline-flex h-7 w-7 items-center justify-center rounded-md text-slate-500 hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-md cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="More actions"
                         >
                           <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4" aria-hidden="true">
