@@ -210,11 +210,6 @@ export function ChatHistorySidebar({
     };
   }, [chatkitRef]);
 
-  const handleClear = () => {
-    writeStoredThreads([]);
-    setThreads([]);
-  };
-
   async function withAuthHeaders() {
     const token = getAccessToken ? await getAccessToken() : null;
     const headers: Record<string, string> = { "Content-Type": "application/json" };
@@ -290,27 +285,7 @@ export function ChatHistorySidebar({
   return (
     <aside className="flex h-full w-72 shrink-0 flex-col border-r border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/60">
       <div className="p-3 border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">History</h2>
-          <div className="flex items-center gap-2">
-            <button
-              className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-              onClick={() => void fetchServerThreads()}
-              title="Refresh"
-              type="button"
-            >
-              {isLoading ? "Refreshing…" : "Refresh"}
-            </button>
-            <button
-              className="text-xs text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
-              onClick={handleClear}
-              title="Clear local list"
-              type="button"
-            >
-              Clear
-            </button>
-          </div>
-        </div>
+        <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">History</h2>
         <button
           type="button"
           onClick={onNewChat}
