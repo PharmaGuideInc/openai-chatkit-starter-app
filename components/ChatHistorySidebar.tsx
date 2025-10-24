@@ -48,6 +48,10 @@ function writeStoredThreads(threads: ThreadItem[]) {
   }
 }
 
+type ChatHistorySidebarPropsWithMobile = ChatHistorySidebarProps & {
+  onCloseMobile?: () => void;
+};
+
 export function ChatHistorySidebar({
   chatkitRef,
   activeThreadId,
@@ -57,7 +61,8 @@ export function ChatHistorySidebar({
   onDeletedThread,
   onRenamedThread,
   titleOverrides,
-}: ChatHistorySidebarProps) {
+  onCloseMobile,
+}: ChatHistorySidebarPropsWithMobile) {
   const [threads, setThreads] = useState<ThreadItem[]>(() => readStoredThreads());
   const initializedRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
@@ -279,8 +284,24 @@ export function ChatHistorySidebar({
   }
 
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-slate-200 bg-white/80 backdrop-blur dark:border-slate-800 dark:bg-slate-900/60">
-      <div className="p-3 border-b border-slate-200 dark:border-slate-800">
+    <aside className="flex h-full w-full md:w-72 shrink-0 flex-col border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      {/* Mobile header with back button */}
+      <div className="flex items-center gap-3 p-4 border-b border-slate-200 dark:border-slate-800 md:hidden">
+        <button
+          type="button"
+          onClick={onCloseMobile}
+          className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+          aria-label="Back to chat"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h1 className="flex-1 text-lg font-medium text-slate-900 dark:text-slate-100">Chat history</h1>
+      </div>
+
+      {/* Desktop header */}
+      <div className="hidden md:block p-3 border-b border-slate-200 dark:border-slate-800">
         <h2 className="text-sm font-semibold text-slate-700 dark:text-slate-200">History</h2>
         <button
           type="button"
@@ -288,6 +309,21 @@ export function ChatHistorySidebar({
           className="mt-3 w-full rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 cursor-pointer"
         >
           New chat
+        </button>
+      </div>
+
+      {/* Mobile "New chat" button */}
+      <div className="p-4 md:hidden">
+        <button
+          type="button"
+          onClick={onNewChat}
+          className="flex w-full items-center gap-3 rounded-lg border border-slate-200 bg-white px-4 py-3 text-left hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 cursor-pointer"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 text-slate-700 dark:text-slate-200">
+            <path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" />
+            <path d="m15 5 4 4" />
+          </svg>
+          <span className="text-base font-medium text-slate-900 dark:text-slate-100">New chat</span>
         </button>
       </div>
 
@@ -413,7 +449,7 @@ export function ChatHistorySidebar({
         )}
       </div>
 
-      <div className="p-2 text-[11px] text-slate-400 border-t border-slate-200 dark:border-slate-800 dark:text-slate-500">
+      <div className="hidden md:block p-2 text-[11px] text-slate-400 border-t border-slate-200 dark:border-slate-800 dark:text-slate-500">
         Showing server history; list cached locally.
       </div>
     </aside>

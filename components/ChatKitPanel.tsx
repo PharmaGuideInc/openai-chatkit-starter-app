@@ -66,6 +66,7 @@ export function ChatKitPanel({
   );
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [showHistoryOnMobile, setShowHistoryOnMobile] = useState(false);
   const [titleOverrides, setTitleOverrides] = useState<Record<string, string>>(() => {
     if (typeof window === "undefined") return {};
     try {
@@ -415,6 +416,8 @@ export function ChatKitPanel({
 
   const handleNewChat = useCallback(() => {
     void chatkit.setThreadId(null);
+    // Close mobile history sidebar after creating new chat
+    setShowHistoryOnMobile(false);
   }, [chatkit]);
 
   const handleSelectThread = useCallback(
@@ -422,6 +425,8 @@ export function ChatKitPanel({
       // Optimistically highlight selection
       setActiveThreadId(id);
       void chatkit.setThreadId(id);
+      // Close mobile history sidebar after selection
+      setShowHistoryOnMobile(false);
     },
     [chatkit]
   );
@@ -449,28 +454,57 @@ export function ChatKitPanel({
 
   return (
     <div className="relative flex h-[90vh] w-full overflow-hidden rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
-      <ChatHistorySidebar
-        chatkitRef={chatkit.ref}
-        activeThreadId={activeThreadId}
-        onNewChat={handleNewChat}
-        onSelectThread={handleSelectThread}
-        titleOverrides={titleOverrides}
-        getAccessToken={async () => {
-          try {
-            const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
-            const token = await getAccessTokenSilently(
-              audience ? { authorizationParams: { audience } } : undefined
-            );
-            return token ?? null;
-          } catch (e) {
-            console.error("[ChatKitPanel] getAccessToken failed", e);
-            return null;
-          }
-        }}
-        onDeletedThread={handleDeletedThread}
-        onRenamedThread={handleRenamedThread}
-      />
-      <div className="relative flex-1 pb-8">
+      {/* Mobile toggle button - only visible on mobile when NOT showing history */}
+      {!showHistoryOnMobile && (
+        <button
+          type="button"
+          onClick={() => setShowHistoryOnMobile(true)}
+          className="absolute right-2 z-30 flex h-12 w-12 items-center justify-center rounded-xl transition-colors md:hidden"
+          aria-label="Show history"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-5 w-5 text-white"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+        </button>
+      )}
+
+      {/* Chat History Sidebar - full screen on mobile when toggled, sidebar on desktop */}
+      <div className={`${showHistoryOnMobile ? 'absolute inset-0 z-40 flex md:relative md:inset-auto' : 'hidden md:flex'} h-full`}>
+        <ChatHistorySidebar
+          chatkitRef={chatkit.ref}
+          activeThreadId={activeThreadId}
+          onNewChat={handleNewChat}
+          onSelectThread={handleSelectThread}
+          titleOverrides={titleOverrides}
+          getAccessToken={async () => {
+            try {
+              const audience = process.env.NEXT_PUBLIC_AUTH0_AUDIENCE;
+              const token = await getAccessTokenSilently(
+                audience ? { authorizationParams: { audience } } : undefined
+              );
+              return token ?? null;
+            } catch (e) {
+              console.error("[ChatKitPanel] getAccessToken failed", e);
+              return null;
+            }
+          }}
+          onDeletedThread={handleDeletedThread}
+          onRenamedThread={handleRenamedThread}
+          onCloseMobile={() => setShowHistoryOnMobile(false)}
+        />
+      </div>
+
+      {/* Chat area - hidden on mobile when history is shown */}
+      <div className={`relative flex-1 pb-8 ${showHistoryOnMobile ? 'hidden md:flex' : 'flex'}`}>
         <ChatKit
           key={widgetInstanceKey}
           control={chatkit.control}
