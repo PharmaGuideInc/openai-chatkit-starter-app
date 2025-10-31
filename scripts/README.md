@@ -116,6 +116,84 @@ npx tsx scripts/attach-files-to-vectorstore.ts
 
 ---
 
+### 6. List Vector Store Files (`list-vectorstore-files.ts`)
+List and count files attached to a specific vector store.
+
+**Usage:**
+```bash
+npx tsx scripts/list-vectorstore-files.ts <VECTOR_STORE_ID>
+# example:
+npx tsx scripts/list-vectorstore-files.ts vs_68fbb131bad08191b5ddbb1fc60de79a
+```
+
+You can also set `VECTOR_STORE_ID` in the environment instead of passing an argument.
+
+**Output:**
+- Total files in the vector store
+- Optional breakdown by file status (completed, failed, etc.)
+
+---
+
+### 7. Analyze Vector Store Files (`analyze-vectorstore-files.ts`)
+Detect duplicate filenames and count how many files start with each letter.
+
+**Usage:**
+```bash
+npx tsx scripts/analyze-vectorstore-files.ts <VECTOR_STORE_ID>
+# example:
+npx tsx scripts/analyze-vectorstore-files.ts vs_68fbb131bad08191b5ddbb1fc60de79a
+```
+
+**What it does:**
+- Paginates `/vector_stores/{id}/files` to collect all vector store file entries
+- Fetches each underlying file (`/files/{file_id}`) to read `filename`
+- Reports duplicate filenames (groups and totals)
+- Prints counts by starting letter (A–Z, Other, Unknown)
+
+Notes:
+- Some failed/phantom entries may not have retrievable filenames; these are counted as `unknown`.
+
+---
+
+### 8. Export Vector Store Filenames (`export-vectorstore-file-names.ts`)
+Write all filenames from a vector store to files in timestamp ascending order.
+
+**Usage:**
+```bash
+npx tsx scripts/export-vectorstore-file-names.ts <VECTOR_STORE_ID>
+# example:
+npx tsx scripts/export-vectorstore-file-names.ts vs_68fbb131bad08191b5ddbb1fc60de79a
+```
+
+**Output:**
+- `scripts/outputs/vectorstore-<id>-filenames.md` (Markdown list, filenames only)
+- `scripts/outputs/vectorstore-<id>-filenames.txt` (one filename per line)
+
+Notes:
+- Sorted by file creation time (ascending) based on the underlying `/files/{file_id}` `created_at`.
+- Files whose filenames cannot be retrieved (e.g., failed/phantom entries) are skipped in the lists and counted in the header.
+
+---
+
+### 9. Dump Vector Store Files JSON (`dump-vectorstore-files-json.ts`)
+Fetch all vector store file entries and write the raw JSON to disk.
+
+**Usage:**
+```bash
+npx tsx scripts/dump-vectorstore-files-json.ts <VECTOR_STORE_ID>
+# example:
+npx tsx scripts/dump-vectorstore-files-json.ts vs_68fbb131bad08191b5ddbb1fc60de79a
+```
+
+**Output:**
+- `scripts/outputs/vectorstore-<id>-files-<timestamp>.json`
+- Contains the combined list response: `{ object: "list", data: [...], total, collected_at, vector_store_id }`
+
+Notes:
+- This is the direct data from `/vector_stores/{id}/files` across all pages. It may not include filenames; use this together with `/files/{file_id}` where available if you need more detail.
+
+---
+
 ## Complete Workflow: Upload & Attach Files
 
 To upload files and attach them to a vector store from scratch:
