@@ -1,14 +1,25 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthButtons } from "@/components/AuthButtons";
 import { useAuth0 } from "@auth0/auth0-react";
+import { TermsAgreementDialog } from "@/components/TermsAgreementDialog";
+import { DisclaimerDialog } from "@/components/DisclaimerDialog";
 
 export default function App() {
   const { scheme, setScheme } = useColorScheme();
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+  const [showTermsAgreement, setShowTermsAgreement] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+  // Show terms agreement dialog on every login/app mount when authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      setShowTermsAgreement(true);
+    }
+  }, [isAuthenticated, isLoading]);
 
   const handleWidgetAction = useCallback(async (action: FactAction) => {
     if (process.env.NODE_ENV !== "production") {
@@ -60,6 +71,30 @@ export default function App() {
           </div>
         )}
       </div>
+
+      {/* Footer with Disclaimer link - only show when authenticated */}
+      {isAuthenticated && (
+        <footer className="w-full border-t border-slate-200 bg-white py-4 dark:border-slate-800 dark:bg-slate-900">
+          <div className="mx-auto flex max-w-5xl items-center justify-center px-4">
+            <button
+              onClick={() => setShowDisclaimer(true)}
+              className="text-sm text-slate-600 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+            >
+              View Disclaimer
+            </button>
+          </div>
+        </footer>
+      )}
+
+      {/* Dialogs */}
+      <TermsAgreementDialog
+        isOpen={showTermsAgreement}
+        onClose={() => setShowTermsAgreement(false)}
+      />
+      <DisclaimerDialog
+        isOpen={showDisclaimer}
+        onClose={() => setShowDisclaimer(false)}
+      />
     </main>
   );
 }

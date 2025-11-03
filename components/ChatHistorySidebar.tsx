@@ -448,10 +448,6 @@ export function ChatHistorySidebar({
           </ul>
         )}
       </div>
-
-      <div className="hidden md:block p-2 text-[11px] text-slate-400 border-t border-slate-200 dark:border-slate-800 dark:text-slate-500">
-        Showing server history; list cached locally.
-      </div>
     </aside>
   );
 }
