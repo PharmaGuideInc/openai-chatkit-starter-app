@@ -12,8 +12,8 @@ import {
   getThemeConfig,
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
-import type { ColorScheme } from "@/hooks/useColorScheme";
 import { ChatHistorySidebar } from "./ChatHistorySidebar";
+import { DisclaimerDialog } from "./DisclaimerDialog";
 
 export type FactAction = {
   type: "save";
@@ -22,10 +22,8 @@ export type FactAction = {
 };
 
 type ChatKitPanelProps = {
-  theme: ColorScheme;
   onWidgetAction: (action: FactAction) => Promise<void>;
   onResponseEnd: () => void;
-  onThemeRequest: (scheme: ColorScheme) => void;
 };
 
 type ErrorState = {
@@ -46,10 +44,8 @@ const createInitialErrors = (): ErrorState => ({
 });
 
 export function ChatKitPanel({
-  theme,
   onWidgetAction,
   onResponseEnd,
-  onThemeRequest,
 }: ChatKitPanelProps) {
   const { getAccessTokenSilently } = useAuth0();
   const processedFacts = useRef(new Set<string>());
@@ -67,6 +63,7 @@ export function ChatKitPanel({
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [showHistoryOnMobile, setShowHistoryOnMobile] = useState(false);
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   const [titleOverrides, setTitleOverrides] = useState<Record<string, string>>(() => {
     if (typeof window === "undefined") return {};
     try {
@@ -320,8 +317,8 @@ export function ChatKitPanel({
   const chatkit = useChatKit({
     api: { getClientSecret },
     theme: {
-      colorScheme: theme,
-      ...getThemeConfig(theme),
+      colorScheme: "light",
+      ...getThemeConfig(),
     },
     header: {
       enabled: true,
@@ -352,18 +349,6 @@ export function ChatKitPanel({
       name: string;
       params: Record<string, unknown>;
     }) => {
-      if (invocation.name === "switch_theme") {
-        const requested = invocation.params.theme;
-        if (requested === "light" || requested === "dark") {
-          if (isDev) {
-            console.debug("[ChatKitPanel] switch_theme", requested);
-          }
-          onThemeRequest(requested);
-          return { success: true };
-        }
-        return { success: false };
-      }
-
       if (invocation.name === "record_fact") {
         const id = String(invocation.params.fact_id ?? "");
         const text = String(invocation.params.fact_text ?? "");
@@ -453,13 +438,14 @@ export function ChatKitPanel({
   );
 
   return (
-    <div className="relative flex h-[90vh] w-full overflow-hidden rounded-2xl bg-white shadow-sm transition-colors dark:bg-slate-900">
+    <div className="relative flex h-[95vh] w-full overflow-hidden bg-white shadow-sm transition-colors">
       {/* Mobile toggle button - only visible on mobile when NOT showing history */}
       {!showHistoryOnMobile && (
         <button
           type="button"
           onClick={() => setShowHistoryOnMobile(true)}
-          className="absolute right-2 z-30 flex h-12 w-12 items-center justify-center rounded-xl transition-colors md:hidden"
+          className="absolute right-2 top-2 z-30 flex h-12 w-12 items-center justify-center rounded-xl transition-colors md:hidden"
+          style={{ backgroundColor: 'var(--cpsgo-primary)' }}
           aria-label="Show history"
         >
           <svg
@@ -504,11 +490,11 @@ export function ChatKitPanel({
       </div>
 
       {/* Chat area - hidden on mobile when history is shown */}
-      <div className={`relative flex-1 pb-8 ${showHistoryOnMobile ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`relative flex-1 ${showHistoryOnMobile ? 'hidden md:flex' : 'flex'}`}>
         <ChatKit
           key={widgetInstanceKey}
           control={chatkit.control}
-          className={"block h-full w-full"}
+          className={"block h-[95%] w-full"}
         />
         <ErrorOverlay
           error={blockingError}
@@ -516,7 +502,29 @@ export function ChatKitPanel({
           onRetry={blockingError && errors.retryable ? handleResetChat : null}
           retryLabel="Restart chat"
         />
+        
+        {/* Footer with Disclaimer */}
+        <footer className="cpsgo-footer absolute bottom-0 left-0 right-0 w-full border-t border-slate-200 bg-white py-3">
+          <div className="mx-auto flex max-w-5xl items-center justify-center px-4">
+            <p className="text-xs text-slate-600 text-center">
+              CPSgo Chat is continuously learning - please verify important information.{' '}
+              <button
+                onClick={() => setShowDisclaimer(true)}
+                className="hover:underline"
+                style={{ color: 'var(--cpsgo-primary)' }}
+              >
+                View Disclaimer
+              </button>
+            </p>
+          </div>
+        </footer>
       </div>
+
+      {/* Disclaimer Dialog */}
+      <DisclaimerDialog
+        isOpen={showDisclaimer}
+        onClose={() => setShowDisclaimer(false)}
+      />
     </div>
   );
 }

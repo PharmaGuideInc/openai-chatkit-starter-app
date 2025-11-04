@@ -45,8 +45,8 @@ export function TermsAgreementDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div
-        className={`flex flex-col bg-white dark:bg-slate-900 shadow-2xl ${
-          isMobile ? "h-full w-full" : "max-h-[90vh] w-full max-w-6xl rounded-2xl"
+        className={`flex flex-col bg-white shadow-2xl ${
+          isMobile ? "h-full w-full" : "max-h-[60vh] w-full max-w-4xl"
         }`}
       >
         {/* Header */}
@@ -62,10 +62,10 @@ export function TermsAgreementDialog({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 text-slate-700 dark:text-slate-300">
+        <div className="flex-1 overflow-y-auto px-6 py-4 text-slate-700">
           <div className="space-y-4">
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 Disclaimer for Test Product Use
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -91,7 +91,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 1. Test Acknowledgment:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -103,7 +103,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 2. Accuracy and Reliability:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -115,7 +115,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 3. User Responsibility:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -127,7 +127,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 4. No Liability:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -136,7 +136,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 5. Feedback Collection:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -145,7 +145,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 6. Acceptance and Amendment of Disclaimer:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -154,7 +154,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 7. Professional and Legal Use:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -163,7 +163,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 8. Modifications and Termination:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -175,7 +175,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 9. DISCLAIMER OF WARRANTIES:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -184,7 +184,7 @@ export function TermsAgreementDialog({
             </section>
 
             <section>
-              <h3 className="mb-2 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-2 text-base font-bold text-slate-900">
                 10. General:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -198,16 +198,16 @@ export function TermsAgreementDialog({
         </div>
 
         {/* Checkbox */}
-        <div className="border-t border-slate-200 px-6 py-3 dark:border-slate-700">
+        <div className="border-t border-slate-200 px-6 py-3">
           <label className="flex cursor-pointer items-start gap-3">
             <input
               type="checkbox"
               checked={acknowledged}
               onChange={(e) => setAcknowledged(e.target.checked)}
-              className="mt-0.5 h-5 w-5 cursor-pointer rounded border-slate-300 focus:ring-2 dark:border-slate-600 dark:bg-slate-800"
+              className="mt-0.5 h-5 w-5 cursor-pointer rounded border-slate-300 focus:ring-2"
               style={{ accentColor: "#52B8C5" }}
             />
-            <span className="text-sm text-slate-700 dark:text-slate-300">
+            <span className="text-sm text-slate-700">
               I acknowledge the above and agree to participate in feedback collection.
             </span>
           </label>

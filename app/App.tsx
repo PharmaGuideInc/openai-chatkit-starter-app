@@ -2,17 +2,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { ChatKitPanel, type FactAction } from "@/components/ChatKitPanel";
-import { useColorScheme } from "@/hooks/useColorScheme";
 import { AuthButtons } from "@/components/AuthButtons";
 import { useAuth0 } from "@auth0/auth0-react";
 import { TermsAgreementDialog } from "@/components/TermsAgreementDialog";
-import { DisclaimerDialog } from "@/components/DisclaimerDialog";
 
 export default function App() {
-  const { scheme, setScheme } = useColorScheme();
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
   const [showTermsAgreement, setShowTermsAgreement] = useState(false);
-  const [showDisclaimer, setShowDisclaimer] = useState(false);
 
   // Show terms agreement dialog on every login/app mount when authenticated
   useEffect(() => {
@@ -34,36 +30,42 @@ export default function App() {
   }, []);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-end bg-slate-100 dark:bg-slate-950">
+    <main className="flex flex-col items-center justify-end">
       {isAuthenticated && (
-        <div className="mx-auto w-full max-w-5xl px-4 py-3 flex items-center justify-end">
-          <AuthButtons />
+        <div className="cpsgo-header mx-auto w-full max-w-5xl px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-semibold text-white">CPSgo Chat</h1>
+            <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-md text-white" style={{ backgroundColor: '#E91E8C' }}>
+              BETA
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <AuthButtons />
+          </div>
         </div>
       )}
-      <div className="mx-auto w-full max-w-5xl">
+      <div className="mx-auto w-full">
         {isLoading ? (
-          <div className="flex items-center justify-center h-[60vh] text-slate-500 dark:text-slate-400">
+          <div className="flex items-center justify-center h-[60vh] text-slate-500">
             Checking session…
           </div>
         ) : isAuthenticated ? (
           <ChatKitPanel
-            theme={scheme}
             onWidgetAction={handleWidgetAction}
             onResponseEnd={handleResponseEnd}
-            onThemeRequest={setScheme}
           />
         ) : (
           <div className="flex items-center justify-center h-[60vh]">
-            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 text-center shadow-sm">
-              <h2 className="text-lg font-semibold mb-2 text-slate-900 dark:text-slate-100">
+            <div className="rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+              <h2 className="text-lg font-semibold mb-2 text-slate-900">
                 Sign in to start chatting
               </h2>
-              <p className="text-sm mb-6 text-slate-600 dark:text-slate-400">
+              <p className="text-sm mb-6 text-slate-600">
                 Please log in with Auth0 to access the assistant.
               </p>
               <button
                 onClick={() => loginWithRedirect()}
-                className="px-4 py-2 rounded-md bg-slate-900 text-white text-sm dark:bg-slate-100 dark:text-slate-900 cursor-pointer"
+                className="cpsgo-btn-primary cursor-pointer"
               >
                 Log in
               </button>
@@ -72,28 +74,10 @@ export default function App() {
         )}
       </div>
 
-      {/* Footer with Disclaimer link - only show when authenticated */}
-      {isAuthenticated && (
-        <footer className="w-full border-t border-slate-200 bg-white py-4 dark:border-slate-800 dark:bg-slate-900">
-          <div className="mx-auto flex max-w-5xl items-center justify-center px-4">
-            <button
-              onClick={() => setShowDisclaimer(true)}
-              className="text-sm text-slate-600 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
-            >
-              View Disclaimer
-            </button>
-          </div>
-        </footer>
-      )}
-
       {/* Dialogs */}
       <TermsAgreementDialog
         isOpen={showTermsAgreement}
         onClose={() => setShowTermsAgreement(false)}
-      />
-      <DisclaimerDialog
-        isOpen={showDisclaimer}
-        onClose={() => setShowDisclaimer(false)}
       />
     </main>
   );

@@ -1,0 +1,494 @@
+/* CPSgo Theme Styles - Color Palette and Layout */
+
+/* Import Montserrat font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+:root {
+  /* CPSgo Color Palette */
+  --cpsgo-primary: #52B8C5;
+  --cpsgo-header-bg: #002538;
+  --cpsgo-user-message-bg: #DCEDFF;
+  --cpsgo-assistant-message-bg: transparent;
+  --cpsgo-instruction-message-bg: #f0f8ff;
+  --cpsgo-instruction-border: #52B8C5;
+  --cpsgo-sidebar-selected-bg: #002538;
+  --cpsgo-sidebar-hover-bg: #dadada;
+  --cpsgo-link-color: #52B8C5;
+  
+  /* State colors */
+  --cpsgo-deleting-from: #ffcdd2;
+  --cpsgo-deleting-to: #ef9a9a;
+  --cpsgo-editing-from: #c8e6c9;
+  --cpsgo-editing-to: #a5d6a7;
+  --cpsgo-loading-from: #e0e0e0;
+  --cpsgo-loading-to: #bdbdbd;
+
+  /* Typography */
+  --cpsgo-font-family: 'Montserrat', sans-serif;
+  --cpsgo-font-weight-regular: 400;
+  --cpsgo-font-weight-medium: 500;
+  --cpsgo-font-weight-semibold: 600;
+  --cpsgo-font-weight-bold: 700;
+
+  /* Spacing */
+  --cpsgo-message-padding: 12px 16px;
+  --cpsgo-message-margin-bottom: 16px;
+  --cpsgo-card-padding: 20px;
+
+  /* Border Radius */
+  --cpsgo-border-radius-user-message: 18px 18px 2px 18px;
+  --cpsgo-border-radius-assistant-message: 18px 18px 18px 2px;
+  --cpsgo-border-radius-input: 24px;
+  --cpsgo-border-radius-card: 18px;
+  --cpsgo-border-radius-button: 4px;
+  --cpsgo-border-radius-image: 16px;
+
+  /* Container Widths */
+  --cpsgo-desktop-chat-width: 65vw;
+  --cpsgo-desktop-input-width: 63vw;
+  --cpsgo-desktop-footer-width: 62vw;
+  --cpsgo-tablet-width: 100vw;
+  --cpsgo-mobile-footer-width: 100%;
+}
+
+/* Apply Montserrat font family globally */
+body {
+  font-family: var(--cpsgo-font-family);
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--cpsgo-font-family);
+  font-weight: var(--cpsgo-font-weight-semibold);
+}
+
+/* Button styles */
+button {
+  font-family: var(--cpsgo-font-family);
+}
+
+/* Link styles */
+a {
+  color: var(--cpsgo-link-color);
+  transition: opacity 0.2s ease;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* CPSgo Themed Components */
+
+/* Header/Toolbar with dark navy background */
+.cpsgo-header {
+  background-color: var(--cpsgo-header-bg);
+  color: white;
+  font-family: var(--cpsgo-font-family);
+}
+
+/* Primary button style */
+.cpsgo-btn-primary {
+  background-color: var(--cpsgo-primary);
+  color: white;
+  font-family: var(--cpsgo-font-family);
+  font-weight: var(--cpsgo-font-weight-semibold);
+  text-transform: uppercase;
+  border-radius: var(--cpsgo-border-radius-button);
+  padding: 10px 20px;
+  transition: opacity 0.2s ease;
+}
+
+.cpsgo-btn-primary:hover {
+  opacity: 0.9;
+}
+
+/* Secondary/Text button style */
+.cpsgo-btn-secondary {
+  background-color: transparent;
+  color: var(--cpsgo-primary);
+  font-family: var(--cpsgo-font-family);
+  font-weight: var(--cpsgo-font-weight-semibold);
+  text-transform: uppercase;
+  border-radius: var(--cpsgo-border-radius-button);
+  padding: 10px 20px;
+  transition: opacity 0.2s ease;
+}
+
+.cpsgo-btn-secondary:hover {
+  opacity: 0.8;
+  background-color: rgba(82, 184, 197, 0.1);
+}
+
+/* Message bubble styles */
+.cpsgo-user-message {
+  background-color: var(--cpsgo-user-message-bg);
+  border-radius: var(--cpsgo-border-radius-user-message);
+  padding: var(--cpsgo-message-padding);
+  margin-bottom: var(--cpsgo-message-margin-bottom);
+  max-width: 85%;
+  margin-left: auto;
+  color: #1a1a1a;
+}
+
+.cpsgo-assistant-message {
+  background-color: var(--cpsgo-assistant-message-bg);
+  border-radius: var(--cpsgo-border-radius-assistant-message);
+  padding: var(--cpsgo-message-padding);
+  margin-bottom: var(--cpsgo-message-margin-bottom);
+  max-width: 100%;
+  color: #1a1a1a;
+}
+
+.cpsgo-instruction-message {
+  background-color: var(--cpsgo-instruction-message-bg);
+  border-left: 4px solid var(--cpsgo-instruction-border);
+  padding: var(--cpsgo-message-padding);
+  margin-bottom: var(--cpsgo-message-margin-bottom);
+}
+
+/* Prompt card styles */
+.cpsgo-prompt-card {
+  border: 1px solid var(--cpsgo-primary);
+  border-radius: var(--cpsgo-border-radius-card);
+  height: 100px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  background-color: white;
+}
+
+.cpsgo-prompt-card:hover {
+  transform: scale(1.05);
+}
+
+/* Chat input styles */
+.cpsgo-chat-input {
+  background-color: white;
+  border-radius: var(--cpsgo-border-radius-input);
+  border: 1px solid #e2e8f0;
+  font-family: var(--cpsgo-font-family);
+}
+
+/* Sidebar styles */
+.cpsgo-sidebar {
+  background-color: #f9fafb;
+  border-right: 1px solid #e5e7eb;
+}
+
+.cpsgo-sidebar-item {
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+  padding: 8px 12px;
+  margin: 4px 0;
+}
+
+.cpsgo-sidebar-item:hover {
+  background-color: #f3f4f6;
+}
+
+.cpsgo-sidebar-item-selected {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.cpsgo-sidebar-item-selected:hover {
+  background-color: #e5e7eb;
+}
+
+/* Footer styles */
+.cpsgo-footer {
+  background-color: white;
+  border-top: 1px solid #e2e8f0;
+  font-size: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.cpsgo-footer a {
+  color: var(--cpsgo-primary);
+  text-decoration: none;
+}
+
+.cpsgo-footer a:hover {
+  text-decoration: underline;
+}
+
+/* HTML Content Styling (for rendered markdown) */
+.cpsgo-html-content {
+  font-family: var(--cpsgo-font-family);
+  line-height: 1.5;
+}
+
+.cpsgo-html-content h1,
+.cpsgo-html-content h2,
+.cpsgo-html-content h3,
+.cpsgo-html-content h4,
+.cpsgo-html-content h5,
+.cpsgo-html-content h6 {
+  font-weight: var(--cpsgo-font-weight-bold);
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.cpsgo-html-content p {
+  margin-bottom: 12px;
+}
+
+.cpsgo-html-content p:last-child {
+  margin-bottom: 0;
+}
+
+.cpsgo-html-content ul,
+.cpsgo-html-content ol {
+  margin-left: 24px;
+  margin-bottom: 12px;
+  list-style-type: disc;
+}
+
+.cpsgo-html-content li {
+  margin-bottom: 4px;
+}
+
+.cpsgo-html-content a {
+  color: var(--cpsgo-primary);
+  text-decoration: underline;
+}
+
+.cpsgo-html-content img {
+  max-width: 100%;
+  border-radius: var(--cpsgo-border-radius-image);
+}
+
+.cpsgo-html-content hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 16px 0;
+}
+
+.cpsgo-html-content code {
+  background-color: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9em;
+}
+
+.cpsgo-html-content pre {
+  background-color: #f5f5f5;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.cpsgo-html-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Citation styles */
+.cpsgo-citation-link {
+  color: var(--cpsgo-primary);
+  text-decoration: none;
+  font-size: 12px;
+}
+
+.cpsgo-citation-link:hover {
+  text-decoration: underline;
+}
+
+.cpsgo-citation-item {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Animations */
+@keyframes cpsgo-pulse-delete {
+  0% {
+    background-color: var(--cpsgo-deleting-from);
+  }
+  100% {
+    background-color: var(--cpsgo-deleting-to);
+  }
+}
+
+@keyframes cpsgo-pulse-edit {
+  0% {
+    background-color: var(--cpsgo-editing-from);
+  }
+  100% {
+    background-color: var(--cpsgo-editing-to);
+  }
+}
+
+@keyframes cpsgo-pulse-loading {
+  0% {
+    background-color: var(--cpsgo-loading-from);
+  }
+  100% {
+    background-color: var(--cpsgo-loading-to);
+  }
+}
+
+.cpsgo-deleting {
+  animation: cpsgo-pulse-delete 1s infinite alternate;
+}
+
+.cpsgo-editing {
+  animation: cpsgo-pulse-edit 1s infinite alternate;
+}
+
+.cpsgo-loading {
+  animation: cpsgo-pulse-loading 1s infinite alternate;
+}
+
+/* Responsive adjustments */
+@media (max-width: 960px) {
+  .cpsgo-user-message,
+  .cpsgo-assistant-message {
+    max-width: 95%;
+    font-size: 14px;
+  }
+
+  .cpsgo-footer {
+    width: 100%;
+  }
+
+  .cpsgo-prompt-card {
+    height: 90px;
+  }
+}
+
+@media (max-width: 600px) {
+  .cpsgo-user-message,
+  .cpsgo-assistant-message {
+    font-size: 14px;
+  }
+
+  .cpsgo-prompt-card {
+    font-size: 12px;
+  }
+
+  .cpsgo-footer {
+    font-size: 9px;
+  }
+}
+
+/* Dark mode adjustments for CPSgo theme */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-color-scheme]) {
+    /* Keep primary colors the same in dark mode */
+    --cpsgo-primary: #52B8C5;
+    --cpsgo-header-bg: #002538;
+  }
+  
+  /* Keep sidebar light even in dark mode to match reference */
+  .cpsgo-sidebar {
+    background-color: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  .cpsgo-sidebar-item {
+    color: #374151;
+  }
+
+  .cpsgo-sidebar-item:hover {
+    background-color: #f3f4f6;
+  }
+
+  .cpsgo-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+  }
+
+  .cpsgo-chat-input {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
+  }
+
+  .cpsgo-html-content code {
+    background-color: #f3f4f6;
+  }
+
+  .cpsgo-html-content pre {
+    background-color: #f3f4f6;
+  }
+}
+
+[data-color-scheme="dark"] {
+  /* Keep primary colors the same in dark mode */
+  --cpsgo-primary: #52B8C5;
+  --cpsgo-header-bg: #002538;
+  
+  /* Keep sidebar light even in dark mode to match reference */
+  .cpsgo-sidebar {
+    background-color: #f9fafb;
+    border-right: 1px solid #e5e7eb;
+  }
+
+  .cpsgo-sidebar-item {
+    color: #374151;
+  }
+
+  .cpsgo-sidebar-item:hover {
+    background-color: #f3f4f6;
+  }
+
+  .cpsgo-footer {
+    background-color: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    color: #6b7280;
+  }
+
+  .cpsgo-chat-input {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
+  }
+
+  .cpsgo-html-content code {
+    background-color: #f3f4f6;
+  }
+
+  .cpsgo-html-content pre {
+    background-color: #f3f4f6;
+  }
+}
+
+/* Sticky elements */
+.cpsgo-sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background-color: var(--cpsgo-header-bg);
+}
+
+.cpsgo-sticky-input {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background-color: white;
+}
+
+/* Chevron icon animations */
+.cpsgo-chevron-icon {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.cpsgo-chevron-icon:hover {
+  transform: scale(1.4);
+  opacity: 1;
+}
+
+.cpsgo-chevron-icon.invisible {
+  opacity: 0;
+  cursor: default;
+  pointer-events: none;
+}

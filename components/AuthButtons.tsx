@@ -8,7 +8,7 @@ export function AuthButtons() {
 
   if (isLoading) {
     return (
-      <div className="text-sm text-slate-500 dark:text-slate-400">Loading…</div>
+      <div className="text-sm text-slate-500">Loading…</div>
     );
   }
 
@@ -20,14 +20,14 @@ export function AuthButtons() {
 
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm text-slate-700 dark:text-slate-200">
+      <span className="text-sm text-slate-700">
         {user?.name || user?.email}
       </span>
       <button
         onClick={() =>
           logout({ logoutParams: { returnTo: window.location.origin } })
         }
-        className="px-3 py-1 rounded-md border text-sm border-slate-300 dark:border-slate-700 cursor-pointer"
+        className="px-3 py-1 rounded-md border text-sm border-slate-300 cursor-pointer"
       >
         Log out
       </button>

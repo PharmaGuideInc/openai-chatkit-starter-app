@@ -35,7 +35,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="flex h-full w-full flex-col bg-white dark:bg-slate-900">
+      <div className="flex h-full w-full flex-col bg-white">
         {/* Header */}
         <div
           className={`flex items-center justify-between px-6 text-white ${
@@ -65,10 +65,10 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 text-slate-700 dark:text-slate-300">
+        <div className="flex-1 overflow-y-auto px-6 py-6 text-slate-700">
           <div className="mx-auto max-w-4xl space-y-6">
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Disclaimer for Beta Product Use
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -77,7 +77,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 1. Beta Testing Acknowledgment:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -86,7 +86,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 2. Accuracy and Reliability:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -95,7 +95,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 3. User Responsibility:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -104,7 +104,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 4. No Liability:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -113,7 +113,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 5. Feedback Collection:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -122,7 +122,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 6. Acceptance of Full Disclaimer and Terms and Conditions:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -134,7 +134,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 7. Professional and Legal Use:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -143,7 +143,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 8. Modifications and Termination:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -155,7 +155,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 9. No Warranties:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -164,7 +164,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h3 className="mb-3 text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="mb-3 text-base font-bold text-slate-900">
                 10. Entire Agreement:
               </h3>
               <p className="mb-4 text-sm leading-relaxed">
@@ -187,7 +187,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Disclaimer
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -202,7 +202,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Editorial Policy
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -211,7 +211,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Copyright and Permissions
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -220,7 +220,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Copyright Notices of Products
               </h2>
               <ul className="mb-4 list-disc space-y-2 pl-6 text-sm">
@@ -236,7 +236,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Right to Use
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -256,7 +256,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Trademarks
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -265,7 +265,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 When to Ask Permission
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -274,7 +274,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Permission Requests
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -300,7 +300,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Restrictions
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -314,7 +314,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             {/* Continue with remaining sections - this is getting very long, so I'll add the key remaining sections */}
             
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Term and Termination
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -332,7 +332,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Third-Party Sites
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -341,7 +341,7 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
             </section>
 
             <section>
-              <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">
                 Privacy Policy
               </h2>
               <p className="mb-4 text-sm leading-relaxed">
@@ -349,8 +349,8 @@ export function DisclaimerDialog({ isOpen, onClose }: DisclaimerDialogProps) {
               </p>
             </section>
 
-            <div className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-8 border-t border-slate-200 pt-6">
+              <p className="text-xs text-slate-500">
                 Last updated: {new Date().toLocaleDateString()}
               </p>
             </div>
